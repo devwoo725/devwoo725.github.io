@@ -1,0 +1,64 @@
+---
+layout: post
+title: "IE '함수'이(가) 정의되지 않았습니다.(SCRIPT5009, ES6 관련)"
+date: 2021-02-27 18:55:00 +0900
+image: IE_ISSUE.jpg
+tags: IE
+---
+
+***
+
+## 이슈 
+- 정의한 js 파일에 function이 존재하지만 "'...(function)'이(가) 정의되지 않았습니다." 오류 발생
+- IE 개발자 모드(F12)에서 정의한 js 파일이 로드되어 있지 않음
+
+![]({{site.baseurl}}/images/IE_ISSUE.jpg)
+
+## 원인
+- 무심코 사용한 ES6문법 [for...of]
+
+## 해결
+- for...of문 제거 후 foreach 사용
+
+## 이슈 해결 노하우!(IE 안쓰기!? ㅎ)
+- 하... 무심코 써버린 ES6 문법으로 너무 많은 시간을 낭비했다.
+- IE 지원이 필요한 개발을 할 때 위와 같은 오류를 만난다면 자신을 의심말고   
+  정의한 js 파일이 로딩이 잘되었는지 먼저 확인해보자.
+- 만약 js 파일이 로딩이 되어 있지 않다면 문법이 잘못되었거나   
+  IE가 해석할 수 없는 어떤 것(ES6?)이 있을것이다!
+- 아래 예제는 js 파일 코드가 몇 줄되지 않아 금방 확인 할 수도 있지만   
+  내 담당 프로젝트의 js 파일을 상상해보라....(소름...) 심지어 다른 사람이 수정하고   
+  커밋해 두었다면.......
+
+***
+
+## TEST(IE 11)
+#### ES6.js
+{% highlight js %}
+function gugudan(dan) {
+  let rowArray = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  let danArray = []
+  for (let row of rowArray) {
+    danArray.push(dan * row)
+  }
+  console.log(danArray.join("\n"))
+}
+{% endhighlight %}
+***
+#### ES6Test.html
+
+{% highlight html %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ES6 IE 이슈 재현</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="/ES6.js"></script>
+  </head>
+  <body>
+    <button type="button" onclick="gugudan(2)">구구단 2단 출력</button>
+  </body>
+</html>
+{% endhighlight %}
+
+[for...of]: https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Statements/for...of
