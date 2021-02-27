@@ -6,13 +6,11 @@ image: IE_ISSUE.jpg
 tags: IE
 ---
 
-***
-
 ## 이슈 
 - 정의한 js 파일에 function이 존재하지만 "'...(function)'이(가) 정의되지 않았습니다." 오류 발생
 - IE 개발자 모드(F12)에서 정의한 js 파일이 로드되어 있지 않음
 
-![]({{site.baseurl}}/images/IE_ISSUE.jpg)
+!['...(function)'이(가) 정의되지 않았습니다.]({{site.baseurl}}/images/IE_ISSUE.jpg)
 
 ## 원인
 - 무심코 사용한 ES6문법 [for...of]
