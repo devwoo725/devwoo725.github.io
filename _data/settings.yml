@@ -1,6 +1,6 @@
 #-------------------------------
 # General Site Settings
-title: Zolan
+title: Devwoo
 logo: logo.svg # You can add own logo.
 description: Zolan is modern minimal theme for Jekyll
 
@@ -9,9 +9,9 @@ description: Zolan is modern minimal theme for Jekyll
 # Author Settings
 author:
   name: Devwoo
-  image: 01.jpg
+  image: one-piece-oden.jpg
   say-hello: Devwoo 기술 블로그
-  bio: Devwoo 개발의 흔적을 나에게 남긴다..
+  bio: 개발의 흔적을 나에게 남긴다..
 
 
 #-------------------------------
@@ -36,7 +36,7 @@ instagram-profile: artemsheludko_ # Add instagram username
 
 #-------------------------------
 # Google Analytics
-google-analytics: # Add your identifier. For example UA-99631805-1.
+google-analytics: G-35G72Q6P4G # Add your identifier. For example UA-99631805-1.
 
 
 #-------------------------------
