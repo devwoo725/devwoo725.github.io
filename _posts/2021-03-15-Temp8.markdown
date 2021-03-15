@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "JSP/Spring/Java 기반 파일 업로드 기능 구현"
+title: "JaCoCo OpenClover"
 date: 2021-02-27 18:55:00 +0900
 image: IE-issue-reproduction.jpg
 tags: IE
@@ -8,11 +8,11 @@ tags: IE
 
 ## HTML multipart/form-data file 처리
 ```html
-<form id="uploadFileForm" method="post" enctype="multipart/form-data">
+<form id="uploadFileForm" enctype="multipart/form-data">
   <input type="file" name="uploadFile" accept=".pptx, .xlsx">
 </form>
 ...
-<form id="uploadFileListForm" method="post" enctype="multipart/form-data">
+<form id="uploadFileListForm" enctype="multipart/form-data">
   <input multiple="multiple" type="file" name="uploadFileList" accept=".pptx, .xlsx">
 </form>
 ```
@@ -24,6 +24,3 @@ tags: IE
 [Sending and retrieving form data](https://developer.mozilla.org/ko/docs/Learn/Forms/Sending_and_retrieving_form_data "Sending and retrieving form data")
 <br>
 [input file](https://developer.mozilla.org/ko/docs/Web/HTML/Element/Input/file "Input file")
-
-[Spring mvc-multipart](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-multipart "Spring mvc-multipart")
-[Spring mvc-multipart-forms](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-multipart-forms "Spring mvc-multipart-forms")
