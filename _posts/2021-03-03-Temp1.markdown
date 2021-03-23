@@ -96,7 +96,7 @@ public class MultipartModel {
 
 
 @Controller
-public class TestController {
+public class UploadTestController {
 
     @PostMapping("/test/upload/requestParam")
     public void upload(@RequestParam("file") MultipartFile multipartFile) {
@@ -117,6 +117,21 @@ public class TestController {
 ```
 
 ## Java 파일 처리
+```java
+@Service
+public class UploadTestService {
+    public void copy(MultipartFile multipartFile) throws IOException {
+        Path uploadTarget = Paths.get("\\upload\\" + multipartFile.getOriginalFilename());
+
+        if (Files.notExists(uploadTarget.getParent())) {
+            Files.createDirectories(uploadTarget.getParent());
+        }
+
+        try (InputStream multipartFileInputStream = multipartFile.getInputStream()) {
+            Files.copy(multipartFileInputStream, uploadTarget);
+        }
+    }
+```
 
 [Sending and retrieving form data](https://developer.mozilla.org/ko/docs/Learn/Forms/Sending_and_retrieving_form_data "Sending and retrieving form data")
 <br>
