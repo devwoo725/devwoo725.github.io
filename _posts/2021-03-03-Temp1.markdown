@@ -1,25 +1,122 @@
 ---
-layout: post
-title: "JSP/Spring/Java 기반 파일 업로드 기능 구현"
-date: 2021-02-27 18:55:00 +0900
-image: IE-issue-reproduction.jpg
-tags: IE
+layout: post title: "JSP/Spring/Java 기반 파일 업로드 기능 구현"
+date: 2021-02-27 18:55:00 +0900 image: IE-issue-reproduction.jpg tags: IE
 ---
 
 ## HTML multipart/form-data file 처리
+
 ```html
-<form id="uploadFileForm" method="post" enctype="multipart/form-data">
-  <input type="file" name="uploadFile" accept=".pptx, .xlsx">
+
+<form method="post" enctype="multipart/form-data" action="test/upload/requestParam" accept-charset="UTF-8">
+  <input type="file" name="uploadFile" accept=".pptx">
+  <input type="submit" value="requestParam upload">
 </form>
-...
-<form id="uploadFileListForm" method="post" enctype="multipart/form-data">
-  <input multiple="multiple" type="file" name="uploadFileList" accept=".pptx, .xlsx">
+<form method="post" enctype="multipart/form-data" action="test/uploads/requestParam" accept-charset="UTF-8">
+  <input multiple type="file" name="uploadFileList" accept=".pptx, .png">
+  <input type="submit" value="requestParam uploads">
+</form>
+<form method="post" enctype="multipart/form-data" action="/test/upload/commandObject" accept-charset="UTF-8">
+  <input type="file" name="uploadFile" accept="image/*">
+  <input type="submit" value="customModel upload">
+</form>
+<form method="post" enctype="multipart/form-data" action="/test/uploads/commandObject" accept-charset="UTF-8">
+  <input multiple type="file" name="uploadFileList" accept="application/vnd.ms-powerpoint">
+  <input type="submit" value="customModel uploads">
 </form>
 ```
+
 ## Spring multipart 파일 처리
 
-## Java 파일 처리
+### TEST VERSION
 
+- Spring Framework Version __5.3.5__
+
+### multipartResolver config
+
+- CommonsMultipartResolver config
+  > build.gradle
+    ```
+    dependencies {
+        implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+    }
+    ```
+
+  > WebConfig.java
+    ```java
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+        @Bean(name = "multipartResolver")
+        public CommonsMultipartResolver getCommonsMultipartResolver() {
+            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+            multipartResolver.setMaxUploadSize(20971520);   // 20MB
+            multipartResolver.setMaxInMemorySize(1048576);  // 1MB
+            return multipartResolver;
+        }
+    }
+    ```
+- StandardServletMultipartResolver config
+  > WebApplicationInitializer.java
+    ```java
+    public class WebApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+        @Override
+        protected Class<?>[] getServletConfigClasses() {
+            return new Class[]{WebConfig.class};
+        }
+        @Override
+        protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+            registration.setMultipartConfig(new MultipartConfigElement(""));
+        }
+        // ...
+    }
+    ```
+  > WebConfig.java
+    ```java
+    @Configuration
+    public class WebConfig implements WebMvcConfigurer {
+        @Bean(name = "multipartResolver")
+        public StandardServletMultipartResolver getCommonsMultipartResolver() {
+            return new StandardServletMultipartResolver();
+        }
+        // ...
+    }
+    ```
+
+### Controller
+
+```java
+/**
+ * Command Object
+ */
+public class MultipartModel {
+
+    private MultipartFile uploadFile;
+    private List<MultipartFile> uploadFileList;
+    // ...
+}
+
+
+@Controller
+public class TestController {
+
+    @PostMapping("/test/upload/requestParam")
+    public void upload(@RequestParam("file") MultipartFile multipartFile) {
+    }
+
+    @PostMapping("/test/uploads/requestParam")
+    public void uploads(@RequestParam("uploadFileList") List<MultipartFile> multipartFileList) {
+    }
+
+    @PostMapping("/test/upload/commandObject")
+    public void upload(@ModelAttribute MultipartModel multipartModel) {
+    }
+
+    @PostMapping("/test/uploads/commandObject")
+    public void uploads(@ModelAttribute MultipartModel multipartModel) {
+    }
+}
+```
+
+## Java 파일 처리
 
 [Sending and retrieving form data](https://developer.mozilla.org/ko/docs/Learn/Forms/Sending_and_retrieving_form_data "Sending and retrieving form data")
 <br>
@@ -27,3 +124,4 @@ tags: IE
 
 [Spring mvc-multipart](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-multipart "Spring mvc-multipart")
 [Spring mvc-multipart-forms](https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-multipart-forms "Spring mvc-multipart-forms")
+[Spring file upload](https://www.baeldung.com/spring-file-upload "Spring file upload")
