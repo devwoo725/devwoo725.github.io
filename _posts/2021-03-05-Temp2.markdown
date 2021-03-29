@@ -6,20 +6,133 @@ image: IE-issue-reproduction.jpg
 tags: IE
 ---
 
-## HTML multipart/form-data file 처리
-```html
-<form id="uploadFileForm" enctype="multipart/form-data">
-  <input type="file" name="uploadFile" accept=".pptx, .xlsx">
-</form>
-...
-<form id="uploadFileListForm" enctype="multipart/form-data">
-  <input multiple="multiple" type="file" name="uploadFileList" accept=".pptx, .xlsx">
-</form>
+## POI
+```java
+public class DownloadExcelController {
+    @InitBinder
+    private void initBinder(final WebDataBinder webdataBinder) {
+        webdataBinder.registerCustomEditor(Type.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(Type.get(text));
+            }
+        });
+    }
+
+    @PostMapping("")
+    @ResponseBody
+    public void downloadSearchResultExcel(@RequestBody List<?> list, @PathVariable("type") Type type, HttpServletResponse response) {
+        try {
+            writeExcel(type.getCode(), downloadExcelService.getSearchResultWorkbook(type, list), response);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private void writeExcel(String filePrefix, Workbook workbook, HttpServletResponse response) {
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=" + filePrefix + "_"
+                + DateTimeUtils.format("yyyy_MM_dd-HH-mm-ss") + ".xlsx");
+
+        try (OutputStream outputStream = response.getOutputStream()) {
+            workbook.write(outputStream);
+            outputStream.flush();
+        } catch (Exception e) {
+            logger.error("download excel fail!", e);
+        }
+    }
+}
 ```
-## Spring multipart 파일 처리
 
-## Java 파일 처리
+```java
+@Service
+public class DownloadExcelService {
+    public Workbook getSearchResultWorkbook(Type type, List<?> list) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        CellStyle wrapTextStyle = workbook.createCellStyle();
+        wrapTextStyle.setWrapText(true);
 
+        Sheet sheet = makeSheet(workbook, list.size());
+        makeHeader(type, sheet, wrapTextStyle);
+        makeBody(type, sheet, list, wrapTextStyle);
+
+        return workbook;
+    }
+
+    private void makeCell(Row row, int index, String value) {
+        Cell cell = row.createCell(index);
+        cell.setCellValue(ExcelUtils.getCellValue(value));
+    }
+
+    private void makeCell(Row row, int index, CellStyle cellStyle, String value) {
+        Cell cell = row.createCell(index);
+        cell.setCellStyle(cellStyle);
+        cell.setCellValue(ExcelUtils.getCellValue(value));
+    }
+
+    private Sheet makeSheet(Workbook workbook, int maxRow) {
+        Sheet sheet = workbook.createSheet("Test");
+        sheet.setAutoFilter(new CellRangeAddress(0, maxRow, 0, 0));
+        sheet.setColumnWidth(0, ExcelUtils.getColumnWidth(5));
+        // ...
+        return sheet;
+    }
+
+    /**
+     * 엑셀 타이틀을 만든다.
+     *
+     * @param sheet
+     */
+    private void makeSearchResultHeader(SearchType searchType, Sheet sheet, CellStyle cellStyle) {
+        Row row = sheet.createRow(0);
+        makeCell(row, 0, "column1");
+        // ...
+    }
+
+    private void makeBody(Type type, Sheet sheet, List<?> list, CellStyle wrapTextStyle) {
+        Row row;
+        int rowIndex = 1;
+        for (Object obj : list) {
+            row = sheet.createRow(rowIndex++);
+
+            makeCell(row, 0, obj.get());
+            // ...
+        }
+    }
+
+}
+```
+
+```java
+public class ExcelUtils {
+    private static final int CELL_MAX_LENGTH = 32767;
+
+    /**
+     * Excel width 전달
+     * @param width
+     * @return
+     */
+    public static int getColumnWidth(int width) {
+        return width * 256;
+    }
+
+    /**
+     * Excel cell 값 전달
+     * - 최대 길이 초과일 경우 최대길이 만큼만 전달
+     * @param value
+     * @return
+     */
+    public static String getCellValue(String value) {
+        if (StringUtils.isEmpty(value) || value.length() <= CELL_MAX_LENGTH) {
+            return value;
+        } else {
+            return value.substring(0, CELL_MAX_LENGTH);
+        }
+    }
+}
+```
 
 [Sending and retrieving form data](https://developer.mozilla.org/ko/docs/Learn/Forms/Sending_and_retrieving_form_data "Sending and retrieving form data")
 <br>

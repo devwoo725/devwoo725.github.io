@@ -1,0 +1,82 @@
+---
+layout: post
+title: "ajax Blob"
+date: 2021-02-27 18:55:00 +0900
+image: IE-issue-reproduction.jpg
+tags: IE
+---
+
+## HTML multipart/form-data file 처리
+```javascript
+let blobUtils = {
+    downloadGet: function (url, fileName, progressIndex) {
+        let self = this;
+
+        progressBar.load(progressIndex, fileName);
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                self.toFile(xhr, this.response, fileName);
+                progressBar.success(progressIndex, fileName);
+            } else if (this.readyState == 4 && this.status != 200) {
+                alert(fileName + " 파일 다운로드에 실패 했습니다.\n(" + self.toString(this.response) + ")");
+                progressBar.fail(progressIndex, fileName);
+            }
+        }
+        xhr.open('GET', url);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+        xhr.responseType = 'blob';
+        xhr.send();
+    }
+    , downloadPost: function (url, body, contentType, fileName, progressIndex) {
+        let self = this;
+
+        progressBar.load(progressIndex, fileName);
+        let xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                self.toFile(xhr, this.response, fileName);
+                progressBar.success(progressIndex, fileName);
+            } else if (this.readyState == 4 && this.status != 200) {
+                alert(fileName + " 파일 다운로드에 실패 했습니다.\n(" + self.toString(this.response) + ")");
+                progressBar.fail(progressIndex, fileName);
+            }
+        }
+        xhr.open('POST', url);
+        xhr.setRequestHeader('Content-Type', contentType);
+        xhr.responseType = 'blob';
+        xhr.send(body);
+    }
+    , toFile: function (xmlHttpRequest, response, fileName) {
+        if (navigator.msSaveOrOpenBlob) { // IE일 경우(IE에서는 .click()이 동작하지 않음!
+            navigator.msSaveOrOpenBlob(response, headerUtils.getFileName(xmlHttpRequest, fileName));
+        } else {
+            let aTagElement = document.createElement("a");
+            let url = URL.createObjectURL(response)
+            aTagElement.href = url;
+            aTagElement.download = headerUtils.getFileName(xmlHttpRequest, fileName);
+            document.body.appendChild(aTagElement);
+            aTagElement.click();
+            window.URL.revokeObjectURL(url);
+        }
+    }
+    , toString: function (response) {
+        if (response == null) { //response가 null로 오는 경우 확인 필요!
+            return "";
+        }
+
+        let url, xhr;
+        url = URL.createObjectURL(response);
+        xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.send();
+        URL.revokeObjectURL(url);
+        return xhr.responseText;
+    }
+}
+```
+## Spring multipart 파일 처리
+
+## Java 파일 처리
+
+[String too long error](https://www.baeldung.com/java-constant-string-too-long-error "string too long error")
