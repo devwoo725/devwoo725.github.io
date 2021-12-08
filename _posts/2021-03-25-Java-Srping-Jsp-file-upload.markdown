@@ -2,7 +2,7 @@
 layout: post 
 title: "JSP/Spring/Java 기반 파일 업로드 기능 구현"
 date: 2021-02-27 18:55:00 +0900
-tags: JAVA SPRING JSP
+tags: [JAVA,SPRING,JSP]
 ---
 
 ## HTML - multipart/form-data file 처리

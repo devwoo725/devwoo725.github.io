@@ -3,7 +3,7 @@ layout: post
 title: "IE '함수'이(가) 정의되지 않았습니다.(SCRIPT5009, ES6 관련)"
 date: 2021-02-27 18:55:00 +0900
 image: IE-issue-reproduction.jpg
-tags: IE
+tags: [IE]
 ---
 
 ## 이슈 
