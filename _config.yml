@@ -3,7 +3,6 @@ url: "https://devwoo725.github.io"
 # the subpath of your site, e.g. /blog
 baseurl: ""
 
-
 # Build settings
 markdown: kramdown
 permalink: pretty
